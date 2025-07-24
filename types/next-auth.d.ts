@@ -8,6 +8,12 @@ declare module "next-auth" {
     user: {
       /** The user's id from the database. */
       id: string;
+      role: string;
     } & DefaultSession["user"];
+  }
+}
+declare module "@auth/core/jwt" {
+  interface JWT {
+    role?: "ADMIN" | "USER";
   }
 }

@@ -30,9 +30,16 @@ export const login = async (
       redirect: false,
     });
   } catch (err) {
-    if (err instanceof AuthError && err.type === "CredentialsSignin") {
+    if (err instanceof AuthError) {
       const customError = err as CustomAuthError;
-      return { error: true, message: customError.message };
+      switch (err.type) {
+        case "CallbackRouteError":
+          return { error: true, message: err.cause?.err?.message };
+        case "CredentialsSignin":
+          return { error: true, message: customError.message };
+        default:
+          return { error: true, message: "An unknown error occurred." };
+      }
     }
     throw err;
   }

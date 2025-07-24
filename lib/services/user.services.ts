@@ -20,6 +20,8 @@ export const getUserById = async (id: string) => {
         id,
       },
     });
+
+    console.log("USER:", user);
     return user;
   } catch (error) {
     return null;

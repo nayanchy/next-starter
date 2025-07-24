@@ -4,6 +4,8 @@ import { loginSchema } from "./schemas";
 import { getUserByEmail } from "./lib/services/user.services";
 import bcrypt from "bcryptjs";
 import { CustomAuthError } from "./lib/errors/auth.error";
+import Google from "next-auth/providers/google";
+import Github from "next-auth/providers/github";
 
 export default {
   providers: [
@@ -23,13 +25,27 @@ export default {
         } else {
           const { email, password } = validatedFields.data;
           const res = await getUserByEmail(email);
-          if (!res || !res.password) {
+          if (!res) {
             throw new CustomAuthError("USER_NOT_FOUND", "User not found");
           }
 
-          const isPasswordValid = await bcrypt.compare(password, res.password);
-          if (!isPasswordValid) {
-            throw new CustomAuthError("INVALID_PASSWORD", "Invalid password");
+          if (res) {
+            if (!res.password) {
+              throw new CustomAuthError(
+                "NO_PASSWORD_PROVIDED",
+                "You have to use social login"
+              );
+            }
+          }
+
+          if (res.password !== null) {
+            const isPasswordValid = await bcrypt.compare(
+              password,
+              res.password
+            );
+            if (!isPasswordValid) {
+              throw new CustomAuthError("INVALID_PASSWORD", "Invalid password");
+            }
           }
 
           // if (!res.emailVerified) {
@@ -38,10 +54,11 @@ export default {
           //     "Please verify your email"
           //   );
           // }
-
           return res;
         }
       },
     }),
+    Google,
+    Github,
   ],
 } satisfies NextAuthConfig;
