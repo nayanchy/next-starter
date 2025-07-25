@@ -18,6 +18,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: "/auth/error",
   },
   callbacks: {
+    signIn: async ({ user, account, profile, email, credentials }) => {
+      //Allow OAuth without email verification
+      if (account?.provider !== "credentials") {
+        return true;
+      }
+
+      const existingUser = await getUserById(user.id as string);
+
+      if (!existingUser?.emailVerified) return false;
+
+      return true;
+    },
     session: async ({ token, session }) => {
       if (session.user) {
         if (token.sub) {

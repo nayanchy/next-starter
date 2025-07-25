@@ -6,7 +6,6 @@ import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { CustomAuthError } from "../errors/auth.error";
 import { getUserByEmail } from "../services/user.services";
-import { generateVerificationToken } from "../tokens/tokens";
 
 export interface LoginResponse {
   success?: boolean;

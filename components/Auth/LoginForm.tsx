@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Button } from "../ui/button";
 import FormError from "../FormMessages/FormError";
 import FormSuccess from "../FormMessages/FormSuccess";
@@ -37,12 +37,15 @@ const LoginForm = () => {
     },
   });
 
-  if (searchParams.get("error") === "OAuthAccountNotLinked") {
-    setError({
-      message: "OAuth account not linked",
-      type: "error",
-    });
-  }
+  useEffect(() => {
+    if (searchParams.get("error") === "OAuthAccountNotLinked") {
+      setError({
+        message:
+          "OAuth account not linked. Please sign in with your original provider.",
+        type: "error",
+      });
+    }
+  }, [searchParams]);
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     startTransiton(async () => {
