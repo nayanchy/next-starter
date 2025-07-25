@@ -5,6 +5,8 @@ import z from "zod";
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { CustomAuthError } from "../errors/auth.error";
+import { getUserByEmail } from "../services/user.services";
+import { generateVerificationToken } from "../tokens/tokens";
 
 export interface LoginResponse {
   success?: boolean;
@@ -22,6 +24,13 @@ export const login = async (
   }
 
   const { email, password } = validatedFields.data;
+
+  const existingUser = await getUserByEmail(email);
+
+  // if (existingUser && !existingUser.emailVerified) {
+  //   const verificatioToken = await generateVerificationToken(email);
+  //   return { error: true, message: "Please verify your email" };
+  // }
 
   try {
     await signIn("credentials", {

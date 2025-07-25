@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { CustomAuthError } from "./lib/errors/auth.error";
 import Google from "next-auth/providers/google";
 import Github from "next-auth/providers/github";
+import { generateVerificationToken } from "./lib/tokens/tokens";
 
 export default {
   providers: [
@@ -48,12 +49,14 @@ export default {
             }
           }
 
-          // if (!res.emailVerified) {
-          //   throw new CustomAuthError(
-          //     "EMAIL_NOT_VERIFIED",
-          //     "Please verify your email"
-          //   );
-          // }
+          if (res && !res.emailVerified) {
+            const verificationToken = await generateVerificationToken(email);
+
+            throw new CustomAuthError(
+              "EMAIL_NOT_VERIFIED",
+              "Please check your email and verify!"
+            );
+          }
           return res;
         }
       },

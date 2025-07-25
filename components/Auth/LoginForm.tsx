@@ -2,7 +2,7 @@
 
 import CardWrapper from "../CardWrapper";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import z, { set } from "zod";
 import { loginSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -19,9 +19,11 @@ import { Button } from "../ui/button";
 import FormError from "../FormMessages/FormError";
 import FormSuccess from "../FormMessages/FormSuccess";
 import { login, LoginResponse } from "@/lib/actions/login";
-import { signIn } from "@/auth";
+import { useSearchParams } from "next/navigation";
 
 const LoginForm = () => {
+  const searchParams = useSearchParams();
+
   const [error, setError] = useState({
     message: "",
     type: "",
@@ -34,6 +36,13 @@ const LoginForm = () => {
       password: "",
     },
   });
+
+  if (searchParams.get("error") === "OAuthAccountNotLinked") {
+    setError({
+      message: "OAuth account not linked",
+      type: "error",
+    });
+  }
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     startTransiton(async () => {

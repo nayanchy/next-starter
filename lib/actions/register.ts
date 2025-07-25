@@ -5,6 +5,7 @@ import z from "zod";
 import * as bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { getUserByEmail } from "@/lib/services/user.services";
+import { generateVerificationToken } from "../tokens/tokens";
 
 export interface LoginResponse {
   success?: boolean;
@@ -48,6 +49,10 @@ export const register = async (
   });
 
   // TODO: Send verification token email
+  const verificationToken = await generateVerificationToken(email);
 
-  return { success: true, message: "Registration successful" };
+  return {
+    success: true,
+    message: "Registration successful, check your email",
+  };
 };
