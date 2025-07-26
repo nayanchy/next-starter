@@ -5,47 +5,45 @@ import { EmailConfig, EmailRequestBody } from "@/types/email";
 export async function POST(request: NextRequest) {
   try {
     const body: EmailRequestBody = await request.json();
+    console.log("BODY:", body);
     const { type, ...data } = body;
 
     let emailData: EmailConfig;
 
     switch (type) {
-      case "welcome":
-        if ("email" in data && "name" in data) {
-          emailData = {
-            to: data.email,
-            ...emailTemplates.welcome(data.name),
-          };
-        } else {
-          throw new Error("Invalid email data");
-        }
+      //   case "welcome":
+      //     if ("email" in data && "name" in data) {
+      //       emailData = {
+      //         to: data.email,
+      //         ...emailTemplates.welcome(data.name),
+      //       };
+      //     } else {
+      //       throw new Error("Invalid email data");
+      //     }
 
-        break;
+      //     break;
 
       case "verification":
-        if ("email" in data && "name" in data && "html" in data) {
-          emailData = {
-            to: data.email,
-            ...emailTemplates.verification(data.name, data.html),
-          };
-        } else {
-          throw new Error("Invalid data for verification email");
-        }
-        break;
-
-      case "custom":
-        if ("to" in data && "subject" in data) {
-          emailData = {
-            to: data.to,
-            subject: data.subject,
-            text: data.text,
-            html: data.html,
-          };
-        } else {
-          throw new Error("Invalid data for custom email");
-        }
+        emailData = {
+          to: data.email,
+          ...emailTemplates.verification(data.name, data.url),
+        };
 
         break;
+
+      //   case "custom":
+      //     if ("to" in data && "subject" in data) {
+      //       emailData = {
+      //         to: data.to,
+      //         subject: data.subject,
+      //         text: data.text,
+      //         html: data.html,
+      //       };
+      //     } else {
+      //       throw new Error("Invalid data for custom email");
+      //     }
+
+      //     break;
 
       default:
         return NextResponse.json(

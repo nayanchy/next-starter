@@ -29,26 +29,31 @@ export interface CustomEmailData {
   html?: string;
 }
 
-export type EmailRequestBody =
-  | {
-      type: "welcome";
-      subject: string;
-      name: string;
-      email: string;
-    }
-  | {
-      type: "verification";
-      name: string;
-      email: string;
-      html: string;
-    }
-  | {
-      type: "custom";
-      to: string;
-      subject: string;
-      text?: string;
-      html?: string;
-    };
+// For now, only verification emails are supported
+export type EmailRequestBody = {
+  type: "verification";
+  name: string;
+  email: string;
+  url: string;
+};
+
+// When you add more types later, uncomment and use this:
+// export type EmailRequestBody = {
+//   type: 'welcome';
+//   name: string;
+//   email: string;
+// } | {
+//   type: 'verification';
+//   name: string;
+//   email: string;
+//   url: string;
+// } | {
+//   type: 'custom';
+//   to: string;
+//   subject: string;
+//   text?: string;
+//   html?: string;
+// };
 
 export interface EmailTemplate {
   subject: string;

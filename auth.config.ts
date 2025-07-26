@@ -8,6 +8,7 @@ import Google from "next-auth/providers/google";
 import Github from "next-auth/providers/github";
 import { generateVerificationToken } from "./lib/tokens/tokens";
 import { emailTemplates, sendMail } from "./lib/email";
+import { sendVerificationEmailViaAPI } from "./lib/email/email.service";
 
 export default {
   providers: [
@@ -53,13 +54,11 @@ export default {
           if (res && !res.emailVerified) {
             const verificationToken = await generateVerificationToken(email);
 
-            const sendVerificationEmail = await sendMail({
-              to: email,
-              ...emailTemplates.verification(
-                res.name as string,
-                `http://localhost:3000/auth/verify?token=${verificationToken.token}`
-              ),
-            });
+            const sendVerificationEmail = await sendVerificationEmailViaAPI(
+              res.name as string,
+              res.email as string,
+              verificationToken.token
+            );
 
             throw new CustomAuthError(
               "EMAIL_NOT_VERIFIED",
