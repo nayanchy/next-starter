@@ -6,6 +6,7 @@ import * as bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { getUserByEmail } from "@/lib/services/user.services";
 import { generateVerificationToken } from "../tokens/tokens";
+import { emailTemplates, sendMail } from "../email";
 
 export interface LoginResponse {
   success?: boolean;
@@ -50,6 +51,18 @@ export const register = async (
 
   // TODO: Send verification token email
   const verificationToken = await generateVerificationToken(email);
+  const token = verificationToken.token;
+  const sendWelcomeEmail = await sendMail({
+    to: email,
+    ...emailTemplates.welcome(name),
+  });
+  const sendVerificationEmail = await sendMail({
+    to: email,
+    ...emailTemplates.verification(
+      name,
+      `http://localhost:3000/auth/verify?token=${token}`
+    ),
+  });
 
   return {
     success: true,
