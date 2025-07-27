@@ -7,6 +7,7 @@ import {
   DEFAULT_LOGIN_REDIRECT,
 } from "./lib/constants/routes";
 import { NextResponse } from "next/server";
+import next from "next";
 
 const { auth } = NextAuth(authConfig);
 export default auth(async (req) => {
@@ -29,8 +30,29 @@ export default auth(async (req) => {
   }
 
   if (!isLoggedIn && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/auth/login", nextUrl));
+    const signInUrl = new URL("/auth/login", nextUrl);
+    signInUrl.searchParams.set("callbackUrl", nextUrl.pathname);
+
+    return NextResponse.redirect(signInUrl);
   }
+
+  if (isPublicRoute) {
+    const verifyRoute = nextUrl.pathname === "/auth/verify";
+    if (verifyRoute) {
+      if (isLoggedIn) {
+        return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+      }
+
+      if (!isLoggedIn) {
+        const isTokenInUrl = nextUrl.searchParams.has("token");
+
+        if (!isTokenInUrl) {
+          return NextResponse.redirect(new URL("/auth/login", nextUrl));
+        }
+      }
+    }
+  }
+
   return null;
 });
 

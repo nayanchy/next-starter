@@ -1,4 +1,4 @@
-export const publicRoute = ["/", "/api/send-email"];
+export const publicRoute = ["/", "/api/send-email", "/auth/verify"];
 
 export const authRoutes = ["/auth/login", "/auth/register", "/auth/error"];
 

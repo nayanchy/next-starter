@@ -19,9 +19,10 @@ import { Button } from "../ui/button";
 import FormError from "../FormMessages/FormError";
 import FormSuccess from "../FormMessages/FormSuccess";
 import { login, LoginResponse } from "@/lib/actions/login";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const LoginForm = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const [error, setError] = useState({
@@ -61,6 +62,12 @@ const LoginForm = () => {
           message: res.message as string,
           type: "success",
         });
+        const callbackUrl = searchParams.get("callbackUrl");
+        if (callbackUrl) {
+          router.push(callbackUrl);
+        } else {
+          router.push("/");
+        }
       }
     });
   };
